@@ -4,7 +4,7 @@ var HOST  = require('../config.json').admin_server;
 //var HOST = "";
 
 function access_token() {
-  return (typeof window !== "undefined") ? cookie.parse(document.cookie).admin_access_token : null;
+  return (typeof window !== "undefined") ? cookie.parse(document.cookie).access_token : null;
 }
 
 exports.get = (endpoint, token, query) => {

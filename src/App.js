@@ -26,27 +26,43 @@ class Layout extends Component {
     super(props);
     this.state = {
         username:props.username,
-        access_token:props.access_token,
       }
 
   }
 
+  componentWillReceiveProps(nextProps){
+    if( (nextProps.username !== this.state.username)  ) 
+    {
+      this.setState({
+        username:nextProps.username,
+      });
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    // do things with nextProps.someProp and prevState.cachedSomeProp
+    return {
+        username:nextProps.username,
+        access_token:nextProps.access_token,
+    };
+  }
+
   componentWillMount(){
-    var token = this.props.cookies.get('admin_access_token');
+    var token = this.props.cookies.get('access_token');
     if(token){
-      api.get('/employee').end( (err, result) => {
+      api.get('/access_token').end( (err, result) => {
         if(!err){
           //Actions.setUserInfo(null);
           this.props.onReturn({
-                'username': result.body.name,//this.refs.username.value,
-                'email': "",
-                'access_token':token,
+                'username': result.body.username,//this.refs.username.value,
+                //'email': "",
+                //'access_token':token,
               });
           //cookie.remove('admin_access_token');
           //this.context.history.pushState(null, '/manage/user');
         }
         else {
-          this.props.cookies.remove('admin_access_token');
+          this.props.cookies.remove('access_token');
           //this.context.history.pushState(null, '/login');
         }
 
@@ -64,7 +80,7 @@ class Layout extends Component {
       if(!err){
         //Actions.setUserInfo(null);
         this.props.onLogout();
-        Cookies.remove('admin_access_token');
+        Cookies.remove('access_token');
         this.context.history.pushState(null, '/login');
       }
     });
@@ -76,6 +92,7 @@ class Layout extends Component {
   }
 
   render() {
+    var token = this.props.cookies.get('access_token');
     return (
 <div>
   <nav className="navbar navbar-default">
@@ -140,7 +157,7 @@ class Layout extends Component {
     </div>
   </nav>
   <div id="" className="container">
-    { this.state.access_token ? 
+    { token==null ? 
         (<Login />)
       : (
       <div>
@@ -157,14 +174,17 @@ class Layout extends Component {
   }
 }
 
+Layout.propTypes = {
+}
+
 Layout.contextTypes = {
   history: PropTypes.object.isRequired,
 };
 
 function mapStateToProps(state, ownProps){
+  console.log("app:mapStateToProps")
   return {
-    username : state.userStates? state.userStates.username : null,
-    access_token: state.userStates? state.userStates.access_token : null,
+    username : state.setUserState? state.setUserState.username : null,
   };
 };
 

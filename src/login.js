@@ -56,10 +56,9 @@ class Login extends Component{
 		        });*/
 		        that.props.onLogin({
 		          'username': that.state.username,
-		          'email': "",
-		          'access_token':token,
+		          //'email': "",
 		        });
-		        that.props.cookies.set('admin_access_token', token);
+		        that.props.cookies.set('access_token', token);
 		        that.setState({login_success:true});
 	    		//that.context.history.push(null, '/manage/user');
 			}
@@ -70,7 +69,7 @@ class Login extends Component{
 		          'email': null,
 		          'access_token':null,
 		        });
-		        that.props.cookies.remove('admin_access_token');
+		        that.props.cookies.remove('access_token');
 			}
 		});
 	}
@@ -88,7 +87,7 @@ class Login extends Component{
 <div className="wrapper">
     <form className="form-signin" onSubmit={this.handleLogin}>
       <h2 className="form-signin-heading">Please login</h2>
-      <input type="text" className="form-control" value={this.state.username} placeholder="User Name" onChange={this.handleChange} required="" autofocus="" />
+      <input type="text" className="form-control" value={this.state.username} placeholder="User Name" onChange={this.handleChange} required="" autoFocus="" />
       <input type="password" className="form-control" value={this.state.password} placeholder="Password" onChange={this.passwordChange} required=""/>
       <label className="checkbox">
         <input type="checkbox" value={this.state.rememberMe} id="rememberMe" name="rememberMe" /> Remember me

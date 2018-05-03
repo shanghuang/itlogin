@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var uuid = require('node-uuid');
 var util = require('./util.js');
 
+
 var ObjectId = mongoose.Schema.Types.ObjectId;
 //var redis = require('redis');
 
@@ -206,12 +207,29 @@ function post_login(req,resp){
             }
             else{
                 var token = uuid.v4();
-                GLOBAL.redisclient.set("token:" + token, result.id);     //callback?
+                global.redisclient.set("token:" + token, result.id);     //callback?
                 resp.json({
                     access_token:token,
                 }).end();
             }
         }
+    });
+};
+
+function get_access_token(req,resp){
+    var email = req.body.name;
+    var key = global.redisclient.get("token:" + req.query.access_token, function(err,redis_result){
+        User.findById(redis_result , function(err, result){
+            if(err){
+
+            }
+            else{
+                resp.json({
+                    username:result.name,
+                }).end();
+
+            }
+        });
     });
 };
 
@@ -222,5 +240,6 @@ module.exports = {
     post_unsuspend : post_unsuspend,
     post_test_adduser : post_test_adduser,
     post_login : post_login,
+    get_access_token : get_access_token,
 }
 

@@ -9,7 +9,7 @@ class Management extends Component{
     };
 
     componentWillMount(){
-        var access_token = this.props.cookies.get('admin_access_token');
+        var access_token = this.props.cookies.get('access_token');
         if( !access_token){
             //this.props.history.push('/login');
         }

@@ -12,6 +12,7 @@ var post = require('./serverlib/post.js');
 var tutor = require('./serverlib/tutor.js');
 
 var express = require('express');
+var cookieparser = require('cookie-parser');
 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var redis = require('redis');
@@ -31,7 +32,9 @@ db.once('open', function (callback) {
 
 var app = express();
 app.use(cors());
+
 var router = express.Router();
+app.use(cookieparser());
 
 app.use(express.static('public'));
 app.use(bodyParser.json()); // support json encoded bodies
@@ -45,6 +48,7 @@ app.post('/user/suspend',  user.post_suspend );
 app.post('/user/unsuspend',  user.post_unsuspend );
 app.post('/test_adduser', user.post_test_adduser );
 app.post('/access_token', user.post_login );
+app.get('/access_token', user.get_access_token );
 
 app.get('/post', post.get );
 app.delete('/post/:postid', post.delete_post );

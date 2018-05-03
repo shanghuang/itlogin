@@ -50,7 +50,7 @@ class Register extends Component{
       this.state.error_message = 'password does not match!';
       return;
     };
-    api.post('/admin/employee',data).end( (err, result) => {
+    api.post('/employee',data).end( (err, result) => {
       if(err){
       }
       else{
