@@ -48,6 +48,7 @@ app.post('/user/suspend',  user.post_suspend );
 app.post('/user/unsuspend',  user.post_unsuspend );
 app.post('/test_adduser', user.post_test_adduser );
 app.post('/access_token', user.post_login );
+app.del('/access_token', user.del_access_token );
 app.get('/access_token', user.get_access_token );
 
 app.get('/post', post.get );

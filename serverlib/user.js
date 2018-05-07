@@ -219,18 +219,33 @@ function post_login(req,resp){
 function get_access_token(req,resp){
     var email = req.body.name;
     var key = global.redisclient.get("token:" + req.query.access_token, function(err,redis_result){
-        User.findById(redis_result , function(err, result){
-            if(err){
+        if(redis_result == null){
+            resp.json({username:""}).end();
+        }
+        else{
+            User.findById(redis_result , function(err, result){
+                if(err){
 
-            }
-            else{
+                }
+                else{
+                    resp.json({
+                        username:result.name,
+                    }).end();
+                }
+            });
+        }
+    });
+};
+
+function del_access_token(req,resp){
+
+    global.redisclient.del("token:" + req.query.access_token, function(err,redis_result){
                 resp.json({
-                    username:result.name,
+                    error:err,
                 }).end();
 
-            }
-        });
     });
+
 };
 
 module.exports = {
@@ -241,5 +256,6 @@ module.exports = {
     post_test_adduser : post_test_adduser,
     post_login : post_login,
     get_access_token : get_access_token,
+    del_access_token : del_access_token,
 }
 

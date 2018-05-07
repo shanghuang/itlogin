@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Link, withRouter } from 'react-router-dom'
+import { BrowserRouter, Route, Link, withRouter, Redirect } from 'react-router-dom'
 import {connect} from 'react-redux'
 import PropTypes, {instanceOf} from 'prop-types';
 import Management from './management'
@@ -26,8 +26,9 @@ class Layout extends Component {
     super(props);
     this.state = {
         username:props.username,
-      }
-
+        login_success:false,
+    }
+    this.logout = this.logout.bind(this);
   }
 
   componentWillReceiveProps(nextProps){
@@ -51,7 +52,7 @@ class Layout extends Component {
     var token = this.props.cookies.get('access_token');
     if(token){
       api.get('/access_token').end( (err, result) => {
-        if(!err){
+        if((!err) && (result.body.username!="") ){
           //Actions.setUserInfo(null);
           this.props.onReturn({
                 'username': result.body.username,//this.refs.username.value,
@@ -60,10 +61,11 @@ class Layout extends Component {
               });
           //cookie.remove('admin_access_token');
           //this.context.history.pushState(null, '/manage/user');
+          this.setState({login_success:true});
         }
         else {
           this.props.cookies.remove('access_token');
-          //this.context.history.pushState(null, '/login');
+          this.setState({login_success:false});
         }
 
       });
@@ -76,22 +78,26 @@ class Layout extends Component {
     var data={
       access_token:access_token,
     };*/
+    var that = this;
     api.del('/access_token').end( (err, result) => {
       if(!err){
         //Actions.setUserInfo(null);
-        this.props.onLogout();
-        Cookies.remove('access_token');
-        this.context.history.pushState(null, '/login');
+        that.props.onLogout();
+        //Cookies.remove('access_token');
+        that.props.cookies.remove('access_token');
+        //this.context.history.pushState(null, '/login');
+        that.setState({login_success:false});
       }
     });
   }
 
   login(event){
     event.preventDefault();
-    this.props.history.push('/login');
+    this.setState({login_success:false});   //???
   }
 
   render() {
+
     var token = this.props.cookies.get('access_token');
     return (
 <div>
@@ -134,7 +140,7 @@ class Layout extends Component {
         </form>
         <ul className="nav navbar-nav navbar-right">
           { this.state.username ?
-              <div>
+              <div className="nav navbar-nav">
                 <li><a href="#">Hi! {this.state.username}</a></li>
                 <li><button type="button" className="btn btn-default" onClick={this.logout}>Logout</button></li>
               </div>
