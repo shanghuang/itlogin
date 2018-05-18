@@ -43,6 +43,9 @@ var UserSchema = new mongoose.Schema({
     },
     country : String,
     city : String,
+    verify_link : String,
+    email_verified : Boolean,
+
 }, {collection:'user'} );
 
 var User = mongoose.model('user', UserSchema);
@@ -193,15 +196,15 @@ function post_test_adduser(req,resp){
 };
 
 function post_login(req,resp){
-    var email = req.body.name;
-    var password = req.body.password;
+    let email = req.body.name;
+    let password = req.body.password;
 
     User.findOne({email:req.body.name }, function(err, result){
-        if(err){
+        if( err || (result==null) ){
 
         }
         else{
-            var encoded_passwd = util.encode_password(req.body.password);
+            var encoded_passwd = util.encode_password(password);
             if(result.password != encoded_passwd){
 
             }
@@ -248,14 +251,103 @@ function del_access_token(req,resp){
 
 };
 
+function post_add(req,resp){
+
+    var create_date = new Date();
+    //create_date.setMinutes(create_date.getMinutes() + 100000*Math.random() );
+    var verify_link = util.encode_confirm_link(req.body.email);
+    var link_html = `<!DOCTYPE html>
+    <html>
+        <head>
+          <title>Confirm your account</title>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        </head>
+
+        <body>
+          <div>
+               <p>Just click on the button below - simple as that.</p>
+               <a href=http://localhost:9998/confirm/` + verify_link + `>Confirm now</a>
+          </div>
+        </body>
+    </html>`;
+
+    var newuser = new User({
+        name:req.body.name,
+        birthday : '2000-01-01',
+        gender : 1,
+        nationality : 'tw',
+        privilege : 20,
+        activity : new Date("October 13, 2014 11:13:00"),
+
+        created : create_date,
+        email : req.body.email,
+        password : util.encode_password(req.body.password),
+
+        tos : 1,
+        native_language : [ 1],
+        practice_language : [ 
+            {
+                id : 999,
+                level : 3
+            }
+        ],
+        email_verified : true,
+        tokens : [ 
+            {
+                token : uuid.v4(),
+                created : create_date
+            }
+        ],
+        metadata : {},
+        country : 'tw',
+        city : 'Taichung',
+        verify_link : verify_link,
+        email_verified : false,
+    });
+    newuser.save(function (err, userObj) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('saved successfully:', userObj);
+      }
+    });
+    var info = {
+        to:req.body.email,
+        link:link_html,
+    };
+    util.SendConfirmationEmail(info);
+
+}
+
+function check_confirm(req,resp){
+ 
+    User.findOne({verify_link:req.params.link }, function(err, result){
+        if(result != null){
+            result.email_verified = true;
+            result.save(function(e){ 
+                console.log( e ? 'error' : "");
+                /*var key = "user:"+req.query.userid;
+                redisclient.del(key, function(err, reply) {
+                    console.log(err ? "redis del key error:" + key : "");
+                });*/
+                //resp.end();
+                resp.redirect('http://localhost:3000');
+            });
+        }
+    });
+
+}
+
 module.exports = {
     getCount : getCount,
     get : get,
+    post_add : post_add,
     post_suspend : post_suspend,
     post_unsuspend : post_unsuspend,
     post_test_adduser : post_test_adduser,
     post_login : post_login,
     get_access_token : get_access_token,
     del_access_token : del_access_token,
+    check_confirm : check_confirm
 }
 

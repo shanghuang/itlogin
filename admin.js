@@ -44,12 +44,14 @@ app.get('/', function(req,resp){});
 
 app.get('/user-count', user.getCount );
 app.get('/user',  user.get );
+app.post('/user/add',  user.post_add );
 app.post('/user/suspend',  user.post_suspend );
 app.post('/user/unsuspend',  user.post_unsuspend );
 app.post('/test_adduser', user.post_test_adduser );
 app.post('/access_token', user.post_login );
 app.del('/access_token', user.del_access_token );
 app.get('/access_token', user.get_access_token );
+app.get('/confirm/:link', user.check_confirm );
 
 app.get('/post', post.get );
 app.delete('/post/:postid', post.delete_post );
@@ -59,6 +61,7 @@ app.delete('/comment/:commentid', post.delete_comment );
 app.get('/tutor-count', tutor.getCount );
 app.get('/tutor',  tutor.get );
 app.post('/tutor', tutor.updateStatus)
+
 
 app.listen(config.listen_port, function () {
     console.log('ready on port ' + config.listen_port);

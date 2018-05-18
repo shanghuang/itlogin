@@ -29,9 +29,9 @@ class Register extends Component{
   register(event){
     event.preventDefault();
     var data = {
-      'name': this.state.username.substring(0, 25),
-      'email': this.state.email.trim(),
-      'password': this.state.password,
+      'name': this.username.value.substring(0, 25),
+      'email': this.email.value.trim(),
+      'password': this.password.value,
     };
 
     var validateError = this.validate(data);
@@ -46,11 +46,11 @@ class Register extends Component{
       password: this.refs.passwordInput.value,
     };*/
 
-    if(this.state.password != this.state.password_confirm){
+    if(this.password.value != this.password_confirm.value){
       this.state.error_message = 'password does not match!';
       return;
     };
-    api.post('/employee',data).end( (err, result) => {
+    api.post('/user/add',data).end( (err, result) => {
       if(err){
       }
       else{
@@ -109,7 +109,7 @@ class Register extends Component{
       <div className="control-group">
         <label className="control-label" >Username</label>
         <div className="controls">
-          <input type="text" id="username" value={this.state.username} placeholder="" className="input-xlarge" />
+          <input type="text" id="username" ref={(input) => this.username = input} placeholder="" className="input-xlarge" />
           <p className="help-block">Username can contain any letters or numbers, without spaces</p>
         </div>
       </div>
@@ -119,7 +119,7 @@ class Register extends Component{
       <div className="control-group">
         <label className="control-label" >E-mail</label>
         <div className="controls">
-          <input type="text" id="email" value={this.state.email} placeholder="" className="input-xlarge" />
+          <input type="text" id="email" ref={(input) => this.email = input} placeholder="" className="input-xlarge" />
           <p className="help-block">Please provide your E-mail</p>
         </div>
       </div>
@@ -129,7 +129,7 @@ class Register extends Component{
       <div className="control-group">
         <label className="control-label" >Password</label>
         <div className="controls">
-          <input type="password" id="password" value={this.state.password} placeholder="" className="input-xlarge" />
+          <input type="password" id="password" ref={(input) => this.password = input} placeholder="" className="input-xlarge" />
           <p className="help-block">Password should be at least 4 characters</p>
         </div>
       </div>
@@ -139,7 +139,7 @@ class Register extends Component{
       <div className="control-group">
         <label className="control-label" >Password (Confirm)</label>
         <div className="controls">
-          <input type="password" id="password_confirm" value={this.state.password_confirm} placeholder="" className="input-xlarge" />
+          <input type="password" id="password_confirm" ref={(input) => this.password_confirm = input} placeholder="" className="input-xlarge" />
           <p className="help-block">Please confirm password</p>
         </div>
       </div>

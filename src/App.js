@@ -142,10 +142,9 @@ class Layout extends Component {
           { this.state.username ?
               <div className="nav navbar-nav">
                 <li><a href="#">Hi! {this.state.username}</a></li>
-                <li><button type="button" className="btn btn-default" onClick={this.logout}>Logout</button></li>
-              </div>
+                <li><button type="button" className="btn btn-default" onClick={this.logout}>Logout</button></li>              </div>
             :
-              <li><button type="button" className="btn btn-default" onClick={this.login.bind(this)}>Login</button></li>
+                <a href="/login" className="btn btn-default">Login</a>
 
           }
           <li className="dropdown">
@@ -163,17 +162,12 @@ class Layout extends Component {
     </div>
   </nav>
   <div id="" className="container">
-    { token==null ? 
-        (<Login />)
-      : (
       <div>
         <Route path="/" exact component={Management} />
         <Route path='/manage' component={Management} />
         <Route path='/login' component={Login} />
         <Route path='/register' component={Register} />
       </div>
-      )
-    }
   </div>
 </div>
 );
@@ -190,7 +184,7 @@ Layout.contextTypes = {
 function mapStateToProps(state, ownProps){
   console.log("app:mapStateToProps")
   return {
-    username : state.setUserState? state.setUserState.username : null,
+    username : state.user_info? state.user_info.username : null,
   };
 };
 
