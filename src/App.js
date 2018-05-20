@@ -48,10 +48,26 @@ class Layout extends Component {
     };
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     var token = this.props.cookies.get('access_token');
     if(token){
-      api.get('/access_token').end( (err, result) => {
+      let response = await api.get('/access_token');
+      if((response != null) && (response.body.username!="") ){
+          //Actions.setUserInfo(null);
+          this.props.onReturn({
+                'username': response.body.username,//this.refs.username.value,
+                //'email': "",
+                //'access_token':token,
+              });
+          //cookie.remove('admin_access_token');
+          //this.context.history.pushState(null, '/manage/user');
+          this.setState({login_success:true});
+        }
+        else {
+          this.props.cookies.remove('access_token');
+          this.setState({login_success:false});
+        }
+      /*api.get('/access_token').end( (err, result) => {
         if((!err) && (result.body.username!="") ){
           //Actions.setUserInfo(null);
           this.props.onReturn({
@@ -68,7 +84,7 @@ class Layout extends Component {
           this.setState({login_success:false});
         }
 
-      });
+      });*/
     }
   }
 

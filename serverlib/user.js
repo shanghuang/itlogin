@@ -195,11 +195,53 @@ function post_test_adduser(req,resp){
     }
 };
 
-function post_login(req,resp){
+async function post_login(req,resp){
     let email = req.body.name;
     let password = req.body.password;
 
-    User.findOne({email:req.body.name }, function(err, result){
+    try{
+        let result = await User.findOne({email:req.body.name });
+        if(result) {
+            var encoded_passwd = util.encode_password(password);
+            if(result.password != encoded_passwd){
+                //todo
+            }
+            else{
+                var token = uuid.v4();
+                global.redisclient.set("token:" + token, result.id);     //callback?
+                resp.json({
+                    access_token:token,
+                }).end();
+            }
+        }
+        else{
+            //todo:
+        }
+    }
+    catch ( err ){
+
+    }
+
+    /*User.findOne({email:req.body.name }).then(function(result){
+        if( result==null ){
+
+        }
+        else{
+            var encoded_passwd = util.encode_password(password);
+            if(result.password != encoded_passwd){
+
+            }
+            else{
+                var token = uuid.v4();
+                global.redisclient.set("token:" + token, result.id);     //callback?
+                resp.json({
+                    access_token:token,
+                }).end();
+            }
+        }
+    });*/
+
+    /*User.findOne({email:req.body.name }, function(err, result){
         if( err || (result==null) ){
 
         }
@@ -216,7 +258,7 @@ function post_login(req,resp){
                 }).end();
             }
         }
-    });
+    });*/
 };
 
 function get_access_token(req,resp){
@@ -319,9 +361,10 @@ function post_add(req,resp){
 
 }
 
-function check_confirm(req,resp){
- 
-    User.findOne({verify_link:req.params.link }, function(err, result){
+async function check_confirm(req,resp){
+    let result;
+    try{
+        result = await User.findOne({verify_link:req.params.link });
         if(result != null){
             result.email_verified = true;
             result.save(function(e){ 
@@ -334,7 +377,21 @@ function check_confirm(req,resp){
                 resp.redirect('http://localhost:3000');
             });
         }
-    });
+    }
+    catch(err){
+        //todo:
+    }
+    /*User.findOne({verify_link:req.params.link }, function(err, result){
+        if(result != null){
+            result.email_verified = true;
+            result.save(function(e){ 
+                console.log( e ? 'error' : "");
+                
+                //resp.end();
+                resp.redirect('http://localhost:3000');
+            });
+        }
+    });*/
 
 }
 
