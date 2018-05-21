@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Route, Link, Redirect } from 'react-router-dom'
 import api from './shared/apiHelper'
 //import cookie from 'cookie'
 import { withCookies, Cookies } from 'react-cookie';
@@ -21,6 +21,7 @@ class Register extends Component{
       password_confirm:false,
       error_message:'',
       validateError: false,
+      registration_success:false,
     };
     //console.log('constructor!');
     this.register = this.register.bind(this);
@@ -50,23 +51,24 @@ class Register extends Component{
       this.state.error_message = 'password does not match!';
       return;
     };
+
     api.post('/user/add',data).end( (err, result) => {
       if(err){
+      //todo:error message
+        console.log('add user failed:', err);
       }
       else{
-        //var token = (typeof window !== "undefined") ? cookie.parse(document.cookie).access_token : null;
-        /*Actions.setUserInfo({
-          'username': this.refs.username.value,
-          'email': this.refs.email.value,
-          'access_token':null,
-        });
-
-        this.setState({users:result.body});
-        */
-        this.context.history.pushState(null, '/login');
+        this.setState({registration_success:true});
       }
+    });
+    /*let res = await api.post('/user/add',data);
+    if(res == null){
+      //todo:error message
+    }
+    else{
+      this.setState({registration_success:true});
+    }*/
 
-    } );
   }
 
   validate(inputs) {
@@ -95,6 +97,9 @@ class Register extends Component{
   }
 
   render(){
+    if(this.state.registration_success){
+      return (<Redirect to='/manage/user'/>);
+    }
 
     var validateError = this.state.validateError;
 

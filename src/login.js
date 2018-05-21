@@ -35,13 +35,36 @@ class Login extends Component{
 		this.setState({password: event.target.value});
 	}
 
-	handleLogin(event){
+	async handleLogin(event){
 		event.preventDefault();
 		var data = {
 			'name': this.state.username,
 			'password': this.state.password,
 		};
-		var that = this;
+
+		let result = await api.post('/access_token',data);
+		if(result != null){
+			var token = result.body.access_token;
+
+	        this.props.onLogin({
+	          'username': this.state.username,
+	          //'email': "",
+	        });
+	        this.props.cookies.set('access_token', token);
+	        this.setState({login_success:true});
+		}
+		else{
+			//todo:error response
+			//console.log('error:' + err);
+			this.props.onLogin({
+	          'username': null,
+	          'email': null,
+	          'access_token':null,
+	        });
+	        this.props.cookies.remove('access_token');
+		}
+
+		/*var that = this;
 		api.post('/access_token',data).end( (err, result) => {
 			if(!err){
 				if(result.body.error_code != null){
@@ -49,11 +72,7 @@ class Login extends Component{
 				}
 				//var token = cookie.load('access_token');
 				var token = result.body.access_token;
-				/*Actions.setUserInfo({
-		          'username': this.refs.username.value,
-		          'email': "",
-		          'access_token':token,
-		        });*/
+
 		        that.props.onLogin({
 		          'username': that.state.username,
 		          //'email': "",
@@ -71,7 +90,7 @@ class Login extends Component{
 		        });
 		        that.props.cookies.remove('access_token');
 			}
-		});
+		});*/
 	}
 
 //	onChange:function(event, userinfo){

@@ -293,7 +293,7 @@ function del_access_token(req,resp){
 
 };
 
-function post_add(req,resp){
+async function post_add(req,resp){
 
     var create_date = new Date();
     //create_date.setMinutes(create_date.getMinutes() + 100000*Math.random() );
@@ -346,18 +346,22 @@ function post_add(req,resp){
         verify_link : verify_link,
         email_verified : false,
     });
-    newuser.save(function (err, userObj) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('saved successfully:', userObj);
-      }
-    });
+    
+    try {
+        let res = newuser.save();
+        console.log('Add user(:' + req.body.name + '), ' +  res);
+    }
+    catch(err){
+
+    }
+
     var info = {
         to:req.body.email,
         link:link_html,
     };
     util.SendConfirmationEmail(info);
+
+    resp.end();
 
 }
 
